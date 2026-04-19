@@ -27,6 +27,11 @@ It now also includes a first real-model trace path that captures prompt-token
 attention summaries during Hugging Face generation. This is still an early
 instrumentation layer, not full live KV eviction.
 
+The current recommended benchmark model on local hardware is
+`Qwen/Qwen2.5-0.5B-Instruct`. It is light enough to run practical experiments on
+CPU-only machines while still giving a more realistic trace signal than tiny
+toy checkpoints.
+
 ## Repo layout
 
 ```text
@@ -50,8 +55,11 @@ scripts/
 python3 -m kvmirror.runner --policy keep_all
 python3 -m kvmirror.runner --policy recent_window --window-size 256
 python3 -m kvmirror.runner --policy hybrid --window-size 192 --topk 96
-python3 scripts/run_trace.py --model-name sshleifer/tiny-gpt2
+HF_HUB_OFFLINE=1 python3 scripts/run_trace.py --model-name Qwen/Qwen2.5-0.5B-Instruct
 ```
+
+See `reports/benchmark_summary.md` for the latest tracked simulator and
+real-model benchmark notes.
 
 ## What comes next
 

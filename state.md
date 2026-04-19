@@ -19,6 +19,38 @@ we run a new simulation, replay, or transformer-hook benchmark.
 ## Latest run
 
 - Date: 2026-04-20
+- Mode: roadmap benchmark target decision
+- Commands:
+  - `HF_HUB_OFFLINE=1 python3 scripts/run_trace.py --model-name Qwen/Qwen2.5-0.5B-Instruct --output reports/qwen_0_5b_trace.json`
+  - `HF_HUB_OFFLINE=1 python3 run_gemma_persistent.py --local-files-only --max-input-tokens 8 --max-new-tokens 1`
+- Result:
+  - Qwen `0.5B` trace path completed successfully on local hardware
+  - prompt tokens: `31`
+  - generated tokens: `24`
+  - replay policies all kept `100%` on the short smoke prompt
+  - Gemma `2B` loads and generates in a persistent session, but is too slow for practical repeated benchmark runs on this CPU-only machine
+- Conclusion:
+  - `Qwen/Qwen2.5-0.5B-Instruct` is the default benchmark model for current roadmap work
+  - Gemma remains a compatibility check, not the primary local benchmark target
+
+- Date: 2026-04-20
+- Mode: low-setting simulator benchmark sweep
+- Commands:
+  - `python3 -m kvmirror.runner --policy keep_all --sequence-length 1024 --output reports/keep_all_low.json`
+  - `python3 -m kvmirror.runner --policy recent_window --sequence-length 1024 --window-size 256 --output reports/recent_window_low.json`
+  - `python3 -m kvmirror.runner --policy heavy_hitter --sequence-length 1024 --topk 96 --output reports/heavy_hitter_low.json`
+  - `python3 -m kvmirror.runner --policy hybrid --sequence-length 1024 --window-size 192 --topk 96 --output reports/hybrid_low_compact.json`
+- Result:
+  - `keep_all`: kept `1024 / 1024`, saved bytes `0`, heavy-hitter recall `1.0`, sink recall `1.0`
+  - `recent_window`: kept `272 / 1024`, saved bytes `73,924,608`, heavy-hitter recall `0.9479`, sink recall `1.0`
+  - `heavy_hitter`: kept `96 / 1024`, saved bytes `91,226,112`, heavy-hitter recall `1.0`, sink recall `1.0`
+  - `hybrid`: kept `228 / 1024`, saved bytes `78,249,984`, heavy-hitter recall `0.9896`, sink recall `1.0`
+- Conclusion:
+  - low-setting runs completed successfully
+  - `heavy_hitter` gives the strongest memory reduction in this simulator
+  - `hybrid` preserves almost all heavy hitters while keeping only `22.3%` of tokens, which looks like the safer product candidate
+
+- Date: 2026-04-20
 - Mode: transformer trace smoke test
 - Command:
   `python3 scripts/run_trace.py --model-name sshleifer/tiny-gpt2 --prompt 'Repeat the key point of this short note in one sentence.' --max-new-tokens 8 --output reports/trace_run.json`
@@ -32,8 +64,6 @@ we run a new simulation, replay, or transformer-hook benchmark.
   - conclusion: the hook path works structurally, but this model is not a good
     trace-quality target for KV policy evaluation
 
-## Previous run
-
 - Date: 2026-04-20
 - Mode: simulator smoke test
 - Command:
@@ -44,6 +74,8 @@ we run a new simulation, replay, or transformer-hook benchmark.
   - estimated saved bytes: `72,646,656`
   - heavy-hitter recall: `1.0`
   - sink recall: `1.0`
+
+## Previous run
 
 ## Update rule
 

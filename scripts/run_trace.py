@@ -18,8 +18,11 @@ from kvmirror.replay import replay_trace
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Capture a real transformer attention trace.")
-    parser.add_argument("--model-name", default="sshleifer/tiny-gpt2")
-    parser.add_argument("--prompt", default="Summarize the main idea of this paragraph in one sentence.")
+    parser.add_argument("--model-name", default="Qwen/Qwen2.5-0.5B-Instruct")
+    parser.add_argument(
+        "--prompt",
+        default="Summarize the important product constraints, user needs, and safety considerations in one short paragraph.",
+    )
     parser.add_argument("--max-new-tokens", type=int, default=32)
     parser.add_argument("--output", default="reports/trace_run.json")
     args = parser.parse_args()

@@ -1,9 +1,8 @@
 # KVMirror
 
-`KVMirror` is a separate research repo for LLM KV-cache reduction.
+`KVMirror` is a research repo for LLM KV-cache reduction.
 
-This project is intentionally **not** the MemoirAI classification demo. It is a
-clean starting point for the harder product problem:
+It is a starting point for this product problem:
 
 - keep fewer KV entries during long-context inference,
 - preserve important context,

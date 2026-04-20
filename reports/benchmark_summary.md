@@ -53,6 +53,41 @@ Interpretation:
 - This specific prompt was too short to force meaningful eviction, so it should
   be treated as a smoke test, not a full retention benchmark.
 
+## Qwen practical-context benchmark
+
+Command:
+
+```bash
+HF_HUB_OFFLINE=1 python3 - <<'PY'
+# generates a 516-token prompt with repeated boilerplate plus important facts
+# and writes reports/qwen_practical_context_benchmark.json
+PY
+```
+
+Observed output:
+
+- prompt tokens: `516`
+- generated tokens: `1`
+- estimated bytes per token: `12,288`
+
+Replay results:
+
+| Policy | Kept ratio | Saved bytes | Heavy-hitter recall | Sink recall |
+| --- | ---: | ---: | ---: | ---: |
+| `keep_all` | 1.0000 | 0 | 1.0000 | 1.0000 |
+| `recent_window` | 0.5271 | 2,998,272 | 0.6354 | 1.0000 |
+| `hybrid` | 0.5058 | 3,133,440 | 1.0000 | 1.0000 |
+
+Interpretation:
+
+- Yes, the product direction looks real in this benchmark.
+- On a real Qwen attention trace, `hybrid` cut retained prompt state by about
+  half while preserving all measured heavy hitters and sink tokens.
+- `recent_window` also reduced memory, but it lost too much important-token
+  signal to be the safer default.
+- The current evidence supports `hybrid` as the better product candidate for
+  memory reduction without obvious quality-risk regression.
+
 ## Gemma status
 
 - `google/gemma-2-2b-it` downloads and loads successfully.

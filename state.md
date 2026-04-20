@@ -19,6 +19,21 @@ we run a new simulation, replay, or transformer-hook benchmark.
 ## Latest run
 
 - Date: 2026-04-20
+- Mode: Qwen practical-context benchmark
+- Command:
+  `HF_HUB_OFFLINE=1 python3 <inline benchmark script writing reports/qwen_practical_context_benchmark.json>`
+- Result:
+  - prompt tokens: `516`
+  - generated tokens: `1`
+  - `keep_all`: kept ratio `1.0`, saved bytes `0`, heavy-hitter recall `1.0`, sink recall `1.0`
+  - `recent_window`: kept ratio `0.5271`, saved bytes `2,998,272`, heavy-hitter recall `0.6354`, sink recall `1.0`
+  - `hybrid`: kept ratio `0.5058`, saved bytes `3,133,440`, heavy-hitter recall `1.0`, sink recall `1.0`
+- Conclusion:
+  - Qwen produced the first practical real-model benchmark with actual retention pressure
+  - `hybrid` cut retained prompt state by about half while preserving all measured heavy hitters and sink tokens
+  - current evidence supports `hybrid` as the safer product-default direction over `recent_window`
+
+- Date: 2026-04-20
 - Mode: roadmap benchmark target decision
 - Commands:
   - `HF_HUB_OFFLINE=1 python3 scripts/run_trace.py --model-name Qwen/Qwen2.5-0.5B-Instruct --output reports/qwen_0_5b_trace.json`
